@@ -26,3 +26,13 @@ output.txt
 /nyt*
 /tags
 /.build
+deploy
+pkg/n2-mongo-perl-driver-*
+pkg/*.build
+pkg/*.orig.tar.gz
+pkg/*.diff.gz
+pkg/*.dsc
+pkg/*.buildinfo
+pkg/*.changes
+pkg/*.deb
+.idea
