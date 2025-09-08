@@ -53,7 +53,7 @@ mkdir $DEPLOY_DIR/$MONGO_PERL_DRIVER_PACKAGE
 # Build the source files for the Mongo Perl Driver module.
 echo "# Compiling: N2 Mongo Perl Driver Module"
 cd "$OUR_DIR/$SRC_DIR/"
-perl Makefile.PL
+perl Makefile.PL INSTALLDIRS=vendor
 
 # Perform the make task to generate the built files storing them in a structure that can be
 # bundled in our Deb and RPM files.
@@ -64,7 +64,8 @@ make DESTDIR=$OUR_DIR/$DEPLOY_DIR/$MONGO_PERL_DRIVER_PACKAGE/ install
 # Determine the OS release.
 if [ -f "/etc/debian_version" ]; then
     cd "$OUR_DIR";
-    rm $DEPLOY_DIR/$MONGO_PERL_DRIVER_PACKAGE/usr/local/lib/x86_64-linux-gnu/perl/*/perllocal.pod
+    # Not expected, but just in case.
+    find $DEPLOY_DIR/$MONGO_PERL_DRIVER_PACKAGE -name perllocal.pod -exec rm {} \;
 
     # Create debian packaging.
     echo "# Building Debian package"
@@ -111,23 +112,4 @@ if [ -f "/etc/debian_version" ]; then
     debuild --no-lintian -uc -us
     cd "$OUR_DIR"
 
-fi
-
-if [ -f "/etc/redhat-release" ]; then
-    # Create RPM packaging.
-    echo "# Building RPM package"
-
-    # Remove the pod file.
-    cd "$OUR_DIR";
-    rm $DEPLOY_DIR/$MONGO_PERL_DRIVER_PACKAGE/usr/lib64/perl5/perllocal.pod
-
-    VERSION=$VERSION \
-    RELEASE=$RELEASE \
-    PACKAGE=$MONGO_PERL_DRIVER_PACKAGE \
-        rpmbuild -v \
-        --define "_builddir $OUR_DIR/$DEPLOY_DIR/$MONGO_PERL_DRIVER_PACKAGE" \
-        --define "_rpmdir %(pwd)/rpms" \
-        --define "_srcrpmdir %(pwd)/rpms" \
-        --define "_sourcedir %(pwd)/../" \
-        -ba n2-mongo-perl-driver.spec
 fi
